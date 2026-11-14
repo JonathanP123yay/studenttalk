@@ -1,4 +1,23 @@
 const allowedOrigin = 'https://jonathanp123yay.github.io'
+const allowedOrigins = new Set([
+  allowedOrigin,
+  'https://lakeside-academy.gitlab.io',
+  'https://www.lakeside-academy.gitlab.io',
+])
+
+function isAllowedOrigin(origin) {
+  if (!origin) return false
+  try {
+    const hostname = new URL(origin).hostname.toLowerCase()
+    return allowedOrigins.has(origin)
+      || hostname === 'localhost'
+      || hostname === '127.0.0.1'
+      || hostname.endsWith('.github.io')
+      || hostname.endsWith('.gitlab.io')
+  } catch {
+    return false
+  }
+}
 
 function json(data, status = 200, origin = allowedOrigin) {
   return new Response(JSON.stringify(data), {
@@ -15,7 +34,7 @@ function json(data, status = 200, origin = allowedOrigin) {
 
 function getOrigin(request) {
   const origin = request.headers.get('Origin')
-  return origin === allowedOrigin || origin?.startsWith('http://localhost:') ? origin : allowedOrigin
+  return isAllowedOrigin(origin) ? origin : allowedOrigin
 }
 
 export default {
